@@ -6,14 +6,8 @@ let state = [];
 addEventListener("load", (event) => {
   state = initGameBoard();
 
-  const randomEmptyCell1 = getRandomFreeCell();
-  applyToCell(randomEmptyCell1[0], randomEmptyCell1[1], 2);
-  const randomEmptyCell2 = getRandomFreeCell();
-  applyToCell(randomEmptyCell2[0], randomEmptyCell2[1], 4);
-  const randomEmptyCell3 = getRandomFreeCell();
-  applyToCell(randomEmptyCell3[0], randomEmptyCell3[1], 8);
-  const randomEmptyCell4 = getRandomFreeCell();
-  applyToCell(randomEmptyCell4[0], randomEmptyCell4[1], 16);
+  insertAtRandomCell();
+  insertAtRandomCell();
 
   initHTMLBoard();
   render();
@@ -33,6 +27,11 @@ function initGameBoard() {
   return state;
 }
 
+function insertAtRandomCell() {
+  const [i, j] = getRandomFreeCell();
+  state[i][j] = Math.random() < 0.9 ? 2 : 4;
+}
+
 function getRandomFreeCell() {
   const emptyStates = [];
 
@@ -49,10 +48,6 @@ function getRandomFreeCell() {
     emptyStates[Math.floor(Math.random() * emptyStates.length)];
 
   return randomEmptyCell;
-}
-
-function applyToCell(i, j, value) {
-  state[i][j] = value;
 }
 
 function initHTMLBoard() {
@@ -86,6 +81,8 @@ document.addEventListener("keydown", (event) => {
     event.preventDefault();
   }
 
+  const previousState = state;
+
   switch (event.key) {
     case "ArrowUp":
       moveUp();
@@ -99,6 +96,10 @@ document.addEventListener("keydown", (event) => {
     case "ArrowRight":
       moveRight();
       break;
+  }
+
+  if (JSON.stringify(state) !== JSON.stringify(previousState)) {
+    insertAtRandomCell();
   }
 
   render();
@@ -124,9 +125,17 @@ function moveLeft() {
 
 function moveRight() {
   state = state.map((row) => {
-    const newRowState = row.filter((v) => v !== 0);
+    let newRowState = row.filter((v) => v !== ZERO_CELL_VALUE);
 
-    // todo handle merging
+    for (let i = newRowState.length - 1; i > 0; --i) {
+      if (newRowState[i] === newRowState[i - 1]) {
+        newRowState[i] = 0;
+        newRowState[i - 1] *= 2;
+        --i; // skip, because we merged it
+      }
+    }
+
+    newRowState = newRowState.filter((v) => v !== ZERO_CELL_VALUE);
 
     while (newRowState.length < 4) {
       newRowState.unshift(ZERO_CELL_VALUE);
