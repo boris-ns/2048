@@ -1,9 +1,10 @@
 const MATRIX_SIZE = 4;
+const ZERO_CELL_VALUE = 0;
 
 let state = [];
 
 addEventListener("load", (event) => {
-  initGameState();
+  state = initGameBoard();
 
   const randomEmptyCell1 = getRandomFreeCell();
   applyToCell(randomEmptyCell1[0], randomEmptyCell1[1], 2);
@@ -18,16 +19,18 @@ addEventListener("load", (event) => {
   render();
 });
 
-function initGameState() {
-  state = [];
+function initGameBoard() {
+  const state = [];
 
   for (let i = 0; i < MATRIX_SIZE; ++i) {
     state.push([]);
 
     for (let j = 0; j < MATRIX_SIZE; ++j) {
-      state[i].push(0);
+      state[i].push(ZERO_CELL_VALUE);
     }
   }
+
+  return state;
 }
 
 function getRandomFreeCell() {
@@ -35,7 +38,7 @@ function getRandomFreeCell() {
 
   for (let i = 0; i < MATRIX_SIZE; ++i) {
     for (let j = 0; j < MATRIX_SIZE; ++j) {
-      if (state[i][j] === 0) {
+      if (state[i][j] === ZERO_CELL_VALUE) {
         emptyStates.push([i, j]);
       }
     }
@@ -67,7 +70,7 @@ function initHTMLBoard() {
 }
 
 function getCellValue(value) {
-  return value === 0 ? "" : value;
+  return value === ZERO_CELL_VALUE ? "" : value;
 }
 
 function getCellIdName(i, j) {
@@ -85,43 +88,68 @@ document.addEventListener("keydown", (event) => {
 
   switch (event.key) {
     case "ArrowUp":
-      console.log("UP");
+      moveUp();
       break;
     case "ArrowDown":
-      console.log("DOWN");
+      moveDown();
       break;
     case "ArrowLeft":
-      console.log("LEFT");
+      moveLeft();
       break;
     case "ArrowRight":
       moveRight();
-      render();
       break;
   }
+
+  render();
 });
 
+function moveUp() {
+  transposeState();
+  moveLeft();
+  transposeState();
+}
+
+function moveDown() {
+  transposeState();
+  moveRight();
+  transposeState();
+}
+
+function moveLeft() {
+  reverseRows();
+  moveRight();
+  reverseRows();
+}
+
 function moveRight() {
-  for (let i = 0; i < state.length; ++i) {
-    for (let j = 0; j < state.length; ++j) {
-      if (state[i][j] === 0) {
-        continue;
-      }
+  state = state.map((row) => {
+    const newRowState = row.filter((v) => v !== 0);
 
-      // There's no space to push elements to right
-      if (j + 1 >= MATRIX_SIZE) {
-        continue;
-      }
+    // todo handle merging
 
-      // Cant place new value over existing one
-      if (state[i][j + 1] !== 0) {
-        continue;
-      }
+    while (newRowState.length < 4) {
+      newRowState.unshift(ZERO_CELL_VALUE);
+    }
 
-      // TODO handle merging
-      state[i][j + 1] = state[i][j]; // move right
-      state[i][j] = 0;
+    return newRowState;
+  });
+}
+
+function reverseRows() {
+  state = state.map((row) => row.reverse());
+}
+
+function transposeState() {
+  const transposed = initGameBoard();
+
+  for (let j = 0; j < MATRIX_SIZE; ++j) {
+    for (let i = 0; i < MATRIX_SIZE; ++i) {
+      transposed[i][j] = state[j][i];
     }
   }
+
+  state = transposed;
 }
 
 function render() {

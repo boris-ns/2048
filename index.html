@@ -1,91 +1,11 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <title>2048</title>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <title>2048</title>
-
     <script src="./script.js"></script>
-
-    <!-- todo move to css file -->
-    <style>
-      body {
-        margin: 0;
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        background: #f3f0e8;
-      }
-
-      #board {
-        display: grid;
-        grid-template-columns: repeat(4, 80px);
-        grid-template-rows: repeat(4, 80px);
-        gap: 5px;
-      }
-
-      #board span {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: 1px solid #776e65;
-        border-radius: 20%;
-        font-size: 32px;
-        font-weight: bold;
-        color: #776e65;
-      }
-
-      .cell-0 {
-        background: #cdc1b4;
-      }
-
-      .cell-2 {
-        background: #eee4da;
-      }
-
-      .cell-4 {
-        background: #ede0c8;
-      }
-
-      .cell-8 {
-        background: #f2b179;
-      }
-
-      .cell-16 {
-        background: #f59563;
-      }
-
-      .cell-32 {
-        background: #f67c5f;
-      }
-
-      .cell-64 {
-        background: #f65e3b;
-      }
-
-      .cell-128 {
-        background: #edcf72;
-      }
-
-      .cell-256 {
-        background: #edcc61;
-      }
-
-      .cell-512 {
-        background: #edc850;
-      }
-
-      .cell-1024 {
-        background: #edc53f;
-      }
-
-      .cell-2048 {
-        background: #edc22e;
-      }
-    </style>
+    <link rel="stylesheet" type="text/css" href="./styles.css" />
   </head>
   <body>
     <h1>2048</h1>
