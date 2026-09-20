@@ -2,6 +2,7 @@ const MATRIX_SIZE = 4;
 const ZERO_CELL_VALUE = 0;
 
 let state = [];
+let isGameOver = false;
 
 addEventListener("load", (event) => {
   state = initGameBoard();
@@ -28,8 +29,14 @@ function initGameBoard() {
 }
 
 function insertAtRandomCell() {
-  const [i, j] = getRandomFreeCell();
-  state[i][j] = Math.random() < 0.9 ? 2 : 4;
+  const position = getRandomFreeCell();
+
+  if (!position) {
+    isGameOver = true;
+    return;
+  }
+
+  state[position[0]][position[1]] = Math.random() < 0.9 ? 2 : 4;
 }
 
 function getRandomFreeCell() {
@@ -43,7 +50,10 @@ function getRandomFreeCell() {
     }
   }
 
-  // TODO possible issue if there are no empty cells
+  if (!emptyStates.length) {
+    return null;
+  }
+
   const randomEmptyCell =
     emptyStates[Math.floor(Math.random() * emptyStates.length)];
 
@@ -77,6 +87,10 @@ function getCellClassName(value) {
 }
 
 document.addEventListener("keydown", (event) => {
+  if (isGameOver) {
+    return;
+  }
+
   if (event.key.startsWith("Arrow")) {
     event.preventDefault();
   }
@@ -100,10 +114,19 @@ document.addEventListener("keydown", (event) => {
 
   if (JSON.stringify(state) !== JSON.stringify(previousState)) {
     insertAtRandomCell();
+
+    if (isGameOver) {
+      showGameOver();
+    }
   }
 
   render();
 });
+
+function showGameOver() {
+  const headerElement = document.querySelector("#header");
+  headerElement.textContent = "GAME OVER! :(";
+}
 
 function moveUp() {
   transposeState();
